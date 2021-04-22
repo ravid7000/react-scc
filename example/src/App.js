@@ -1,13 +1,17 @@
 import React from 'react'
 
-import { useMyHook } from 'react-scc'
+import reactSCC from 'react-scc'
 
-const App = () => {
-  const example = useMyHook()
-  return (
-    <div>
-      {example}
-    </div>
-  )
-}
+const App = reactSCC({
+  state: 0,
+  controller: () => {
+    const handleChange = () => {}
+
+    return { handleChange };
+  },
+  component: ({ componentState, handleChange }) => {
+    return <div>counter {componentState}</div>
+  }
+})
+
 export default App

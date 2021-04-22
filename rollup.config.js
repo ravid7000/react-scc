@@ -3,23 +3,25 @@ import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import external from 'rollup-plugin-peer-deps-external'
 import url from '@rollup/plugin-url'
+import { terser } from "rollup-plugin-terser";
+import bundleSize from 'rollup-plugin-bundle-size';
 
 import pkg from './package.json'
 
 export default {
-  input: 'src/index.tsx',
+  input: 'src/index.ts',
   output: [
     {
       file: pkg.main,
       format: 'cjs',
       exports: 'named',
-      sourcemap: true
+      sourcemap: false
     },
     {
       file: pkg.module,
       format: 'es',
       exports: 'named',
-      sourcemap: true
+      sourcemap: false
     }
   ],
   plugins: [
@@ -27,6 +29,12 @@ export default {
     url({ exclude: ['**/*.svg'] }),
     resolve(),
     typescript(),
-    commonjs({ extensions: ['.js', '.ts'] })
+    commonjs({ extensions: ['.js', '.ts'] }),
+    terser({
+      output: {
+        comments: () => false,
+      },
+    }),
+    bundleSize(),
   ]
 }
