@@ -29,15 +29,15 @@ const App = createSCC<AppProps, number, ControllerValue>({
       }
     };
   },
-  component: ({ componentState, increment, decrement, handleRef, reset }) => {
+  component: ({ state, ctrlValue }) => {
     return (
-      <div className="app" ref={handleRef}>
+      <div className="app" ref={ctrlValue.handleRef}>
         <div className="App-header">
-          Counter: {componentState}
+          Counter: {state}
           <div>
-            <button onClick={increment}>+</button>
-            <button onClick={decrement}>-</button>
-            <button onClick={reset}>Reset</button>
+            <button onClick={ctrlValue.increment}>+</button>
+            <button onClick={ctrlValue.decrement}>-</button>
+            <button onClick={ctrlValue.reset}>Reset</button>
           </div>
         </div>
       </div>

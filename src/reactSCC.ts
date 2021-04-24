@@ -103,8 +103,8 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
 
       return component({
         ...this.props,
-        ...this.controllerValue,
-        componentState: this.state.internalState,
+        ctrlValue: this.controllerValue,
+        state: this.state.internalState,
         contextValue: this.context,
       })
     }

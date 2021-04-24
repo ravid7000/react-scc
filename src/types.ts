@@ -25,5 +25,5 @@ export type Controller<P = unknown, S = unknown, C = unknown> = (args: {
 }) => C
 
 export type Component<P = unknown, S = unknown, C = unknown, Ctx = Context> = (
-  props: P & C & { componentState: S; contextValue: Ctx }
+  props: P & { ctrlValue: C, state: S; contextValue: Ctx }
 ) => JSX.Element
