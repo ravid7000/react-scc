@@ -10,10 +10,10 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
   context,
 }: {
   state: S
-  controller?: Controller<P, ReactiveState<S>, C>
-  component: Component<P, S, C, Ctx>
+  controller?: Controller<React.PropsWithChildren<P>, ReactiveState<S>, C>
+  component: Component<React.PropsWithChildren<P>, S, C, Ctx>
   context?: Ctx
-}): React.ReactNode {
+}) {
   return class SCComponent
     extends React.PureComponent<P, { internalState: S }>
     implements React.Component {

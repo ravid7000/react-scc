@@ -22,8 +22,8 @@ export type Controller<P = unknown, S = unknown, C = unknown> = (args: {
   onDestroy: OnDestroy
   beforeUpdate: BeforeUpdate
   afterUpdate: AfterUpdate
-}) => C | undefined | void
+}) => C
 
 export type Component<P = unknown, S = unknown, C = unknown, Ctx = Context> = (
   props: P & C & { componentState: S; contextValue: Ctx }
-) => React.ReactNode
+) => JSX.Element
