@@ -1,29 +1,30 @@
 import React from 'react'
 import ReactiveState from './reactiveState'
 import { noop } from './utils'
-import { Controller, Component, Context } from './types'
+import { Controller, Component } from './types'
 
-function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
+function createSCC<P = unknown, S = unknown, C = unknown>({
   state,
   controller,
   component,
-  context,
+  globalState,
 }: {
   state: S
   controller?: Controller<React.PropsWithChildren<P>, ReactiveState<S>, C>
-  component: Component<React.PropsWithChildren<P>, S, C, Ctx>
-  context?: Ctx
+  component: Component<React.PropsWithChildren<P>, S, C>
+  globalState?: ReactiveState<unknown>
 }) {
   return class SCComponent
-    extends React.PureComponent<P, { internalState: S }>
+    extends React.PureComponent<P, { internalState: S, globalState: any }>
     implements React.Component {
-    static context = context
 
-    reactiveState: ReactiveState<S>
+    reactiveState!: ReactiveState<S>
+    
+    controllerValue!: C
 
     unsubscribeState = noop
 
-    controllerValue!: C
+    unsubscribeGlobalState = noop
 
     listeners = {
       onMount: noop,
@@ -43,14 +44,15 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
 
       this.state = {
         internalState: initialState,
+        globalState: ReactiveState.is(globalState) ? globalState.currentValue : undefined,
       }
       this.reactiveState = new ReactiveState(initialState)
+      
 
       if (controller && typeof controller === 'function') {
         const cv = controller({
           props,
           state: this.reactiveState,
-          context: this.context,
           beforeUpdate: (fn) => this.createLCListener('beforeUpdate', fn),
           onMount: (fn) => this.createLCListener('onMount', fn),
           afterUpdate: (fn) => this.createLCListener('afterUpdate', fn),
@@ -79,6 +81,9 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
 
     componentWillUnmount() {
       this.unsubscribeState()
+      if (typeof this.unsubscribeGlobalState === 'function') {
+        this.unsubscribeGlobalState()
+      }
       this.listeners.onDestroy()
     }
 
@@ -89,11 +94,27 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
     }
 
     initStateSubscribe() {
-      this.unsubscribeState = this.reactiveState.subscribe((newState) => {
-        this.setState({
-          internalState: newState,
+      if (this.reactiveState) {
+        this.unsubscribeState = this.reactiveState.subscribe((newState) => {
+          this.setState((prevState) => {
+            return {
+              globalState: prevState.globalState,
+              internalState: newState,
+            }
+          })
         })
-      })
+      }
+
+      if (ReactiveState.is(globalState)) {
+        this.unsubscribeGlobalState = globalState.subscribe((newState) => {
+          this.setState((prevState) => {
+            return {
+              internalState: prevState.internalState,
+              globalState: newState,
+            }
+          })
+        })
+      }
     }
 
     render() {
@@ -105,7 +126,6 @@ function createSCC<P = unknown, S = unknown, C = unknown, Ctx = Context>({
         ...this.props,
         ctrlValue: this.controllerValue,
         state: this.state.internalState,
-        contextValue: this.context,
       })
     }
   }

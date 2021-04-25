@@ -1,4 +1,4 @@
-import { noop } from './utils'
+import { noop, notEqual } from './utils'
 
 type FN<S> = (state: S) => void
 
@@ -7,7 +7,7 @@ type FNE = () => void
 class ReactiveState<S = unknown> {
   private internalState: S
 
-  listeners: Array<FN<S>> = []
+  private listeners: Array<FN<S>> = []
 
   constructor(state: S) {
     this.internalState = state
@@ -28,9 +28,8 @@ class ReactiveState<S = unknown> {
   }
 
   set(newState: S) {
-    const nextState = newState
-    if (nextState !== this.internalState) {
-      this.internalState = nextState
+    if (notEqual(newState, this.internalState)) {
+      this.internalState = newState
       this.callListeners()
     }
   }
@@ -39,22 +38,31 @@ class ReactiveState<S = unknown> {
     return this.internalState
   }
 
+  set currentValue(_s) {
+    throw new Error('Read Only property "currentValue" cannot be modified')
+  }
+
   update(fn: (state: S) => S) {
     if (fn && typeof fn === 'function') {
       const nextState = fn(this.internalState)
 
-      if (nextState !== this.internalState) {
+      if (notEqual(nextState, this.internalState)) {
         this.internalState = nextState
         this.callListeners()
       }
     }
   }
 
+  static is(state: any): state is ReactiveState {
+    if (state && typeof state === 'object') {
+      return 'currentValue' in state && 'update' in state && 'subscribe' in state;
+    }
+    return false;
+  }
+
   private callListeners() {
     this.listeners.forEach((fn) => {
-      if (fn && typeof fn === 'function') {
-        fn(this.internalState)
-      }
+      fn(this.internalState)
     })
   }
 }
