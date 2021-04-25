@@ -1,56 +1,56 @@
-import createSCC, { ReactiveState } from 'react-scc';
+import createSCC from 'react-scc';
 
-interface AppProps {}
+import globalState from './store';
+
+// components
+import TodoForm from './components/TodoForm';
+import TodoItem from './components/TodoItem';
 
 interface ControllerValue {
-  increment: () => void;
-  decrement: () => void;
-  handleRef: (ref: any) => void;
-  reset: () => void;
+  addTodo: (title: string) => void;
+  toggleTodoItem: (id: number) => void;
+  deleteTodo: (id: number) => void;
 }
 
-const globalState = new ReactiveState(0);
-
-const App = createSCC<AppProps, number, ControllerValue>({
+const App = createSCC<unknown, number, ControllerValue>({
   state: 0,
   globalState,
-  controller: ({ state }) => {
+  controller: ({ state, onDestroy }) => {
+    onDestroy(globalState.subscribe(gs => {
+      state.update(() => gs.filter(item => item.done).length);
+    }))
 
     return {
-      increment: () => {
-        globalState.update(count => count + 1);
-        state.update(st => globalState.currentValue * 2)
+      addTodo: (title) => {
+        globalState.update(state => [{ done: false, title, id: Date.now() }, ...state]);
       },
-      decrement: () => {
-        globalState.update(count => count - 1);
-        state.update(st => globalState.currentValue * 2)
+      toggleTodoItem: (id) => {
+        globalState.update(state => state.map((item) => {
+          if (item.id === id) {
+            item.done = !item.done
+          }
+          return item;
+        }))
       },
-      handleRef: (ref) => {
-        console.log({ ref });
-      },
-      reset: () => {
-        globalState.set(0);
-        state.set(0);
+      deleteTodo: (id) => {
+        globalState.update(state => state.filter(todo => todo.id !== id))
       }
     };
   },
-  component: ({ ctrlValue, state }) => {
-    console.log('re-render');
+  component: ({ state, ctrlValue }) => {
     return (
-      <div className="app" ref={ctrlValue.handleRef}>
-        <div className="App-header">
-          <div>
-            Counter: {globalState.currentValue}
-          </div>
-          <p>
-            Counter<sup>2</sup>: {state}
-          </p>
-          <div>
-            <button onClick={ctrlValue.increment}>+</button>
-            <button onClick={ctrlValue.decrement}>-</button>
-            <button onClick={ctrlValue.reset}>Reset</button>
-          </div>
-        </div>
+      <div className="App">
+        <TodoForm onSubmit={ctrlValue.addTodo} />
+        <p className="total-count">All: {globalState.currentValue.length}, Finished: {state}</p>
+        {globalState.currentValue.map((item) => (
+          <TodoItem
+            key={item.id}
+            done={item.done}
+            title={item.title}
+            onClick={() => ctrlValue.toggleTodoItem(item.id)}
+            onDelete={() => ctrlValue.deleteTodo(item.id)}
+          />
+        ))}
       </div>
     )
   }

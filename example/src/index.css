@@ -1,5 +1,21 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --fg-color: #ecedf0;
+  --bg-color: #282c34;
+  --bg-light: #676d79;
+  --spacing: 16px;
+  --border-radius: 8px;
+}
+
+
 body {
   margin: 0;
+  color: var(--fg-color);
+  font-size: 20px;
+  background-color: var(--bg-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -13,40 +29,83 @@ code {
 }
 
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
   min-height: 100vh;
+  padding-top: 100px;
+}
+
+.todo-form {
+  display: block;
+  margin-bottom: calc(var(--spacing) + 8px);
+}
+
+.todo-form input {
+  display: block;
+  width: 100%;
+  padding: var(--spacing);
+  font-size: 1.5rem;
+  border: 0;
+  border-radius: var(--border-radius);
+  background-color: var(--fg-color);
+}
+
+.todo-form input:focus {
+  outline: none;
+}
+
+.todo-item {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  color: var(--bg-color);
+  border-radius: var(--border-radius);
+  background-color: var(--fg-color);
+  margin-bottom: var(--spacing);
+  padding: var(--spacing);
+}
+
+.todo-item .todo-checkbox {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: calc(var(--border-radius) * 2);
+  margin-right: var(--spacing);
+  border: 2px solid var(--bg-light);
+  cursor: pointer;
+}
+
+.todo-item .todo-btn {
+  background-color: transparent;
+  border: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
 }
 
-.App-link {
-  color: #61dafb;
+.todo-item .todo-title {
+  flex: 1;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.todo-item.done .todo-title {
+  text-decoration: line-through;
+  color: var(--bg-light);
+}
+
+.todo-item.done .todo-checkbox {
+  border-color: transparent;
+}
+
+.todo-item.done .todo-checkbox::before {
+  content: '✅';
+  font-size: 1.7rem;
+  line-height: 1.7rem;
+}
+
+.total-count {
+  font-size: 1.4rem;
 }

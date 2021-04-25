@@ -4,7 +4,7 @@ type FN<S> = (state: S) => void
 
 type FNE = () => void
 
-class ReactiveState<S = unknown> {
+class ReactiveState<S> {
   private internalState: S
 
   private listeners: Array<FN<S>> = []
@@ -53,7 +53,7 @@ class ReactiveState<S = unknown> {
     }
   }
 
-  static is(state: any): state is ReactiveState {
+  static is(state: any): state is ReactiveState<any> {
     if (state && typeof state === 'object') {
       return 'currentValue' in state && 'update' in state && 'subscribe' in state;
     }
