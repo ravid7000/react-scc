@@ -2,7 +2,7 @@ import { WritableState } from 'react-scc'
 
 const key = 'todoStore';
 
-type TodoStore = { done: boolean, title: string, id: number }[]
+type TodoStore = { done: boolean, title: string, id: number, timestamp: string }[]
 
 class ComplexState extends WritableState<TodoStore> {
   get doneTodo() {
@@ -44,3 +44,9 @@ function createPersistedStore() {
 const store = createPersistedStore();
 
 export default store;
+
+export function createTimeStamp() {
+  const date = new Date().toString()
+
+  return date.substring(0, date.indexOf('GMT') - 1)
+}
