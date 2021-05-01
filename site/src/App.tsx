@@ -37,7 +37,6 @@ const App = createSCC<unknown, undefined, ControllerValue>({
     };
   },
   component: ({ ctrlValue }) => {
-    console.log('app rendering');
     return (
       <div className="App">
         <div className="app-title">TODO</div>

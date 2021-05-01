@@ -28,7 +28,6 @@ const TodoForm = createSCC<TodoFormProps, string, ControllerValue>({
     }
   },
   component: ({ ctrlValue, state }) => {
-    console.log('todo form rendering');
     return (
       <form className="todo-form" onSubmit={ctrlValue.handleSubmit}>
         <input type="text" placeholder="Type and press enter" value={state} onChange={ctrlValue.handleChange} />

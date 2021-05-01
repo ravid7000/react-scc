@@ -75,12 +75,6 @@ const Transition = createSCC<TransitionProps, State, { ref: (el: HTMLDivElement)
 
     onDestroy(() => {
       clearTimeout(timer)
-
-      if (el && props.exitTransition) {
-        console.log('exiting', el);
-        
-        el.className = props.exitTransition
-      }
     })
 
     return {
