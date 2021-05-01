@@ -1,32 +1,62 @@
 import React from 'react'
-import ReactiveState from './reactiveState'
 import { noop } from './utils'
 import { Controller, Component } from './types'
 
-function createSCC<P = unknown, S = unknown, C = unknown>({
+export type CreateSCC<P, C> = {
+  /**
+   * State is instance of WritableState created with writable or any object that returns a subscribe function
+   */
+  state?: any
+  /**
+   * Controller is a function which initialized before mounting of component and never updates. You can use controller to write handlers or abstract business logic of the component.
+   */
+  controller?: Controller<React.PropsWithChildren<P>, C>
+  /**
+   * React Component
+   */
+  component: Component<React.PropsWithChildren<P>, C>
+  /**
+   * React Component display name
+   */
+  displayName?: string
+}
+
+/**
+ * Create an instance of SCC (State, Controller, Component design pattern)
+ * @example
+ * import { createSCC, writable } from 'react-scc';
+ * 
+ * const state = writable(0);
+ * 
+ * const App = createSCC({
+ *  state,
+ *  controller: () => {
+ *    ...
+ *  },
+ *  component: () => {
+ *    // React component
+ *  }
+ * });
+ * 
+ * export default App;
+ * 
+ * @param param0 CreateSCC<Props, CtrlValue>
+ * @returns 
+ */
+function createSCC<P = unknown, C = unknown>({
   state,
   controller,
   component,
-  globalState,
-}: {
-  state: S
-  controller?: Controller<React.PropsWithChildren<P>, ReactiveState<S>, C>
-  component: Component<React.PropsWithChildren<P>, S, C>
-  globalState?: ReactiveState<unknown>
-}) {
-  return class SCComponent
-    extends React.PureComponent<P, { internalState: S, globalState: any }>
-    implements React.Component {
+  displayName = 'SCComponent',
+}: CreateSCC<P, C>) {
+  return class SCC extends React.PureComponent<P> {
+    static displayName = displayName
 
-    reactiveState!: ReactiveState<S>
-    
-    controllerValue!: C
+    cv!: C
 
-    unsubscribeState = noop
+    us = noop
 
-    unsubscribeGlobalState = noop
-
-    listeners = {
+    lunr = {
       onMount: noop,
       onDestroy: noop,
       beforeUpdate: noop,
@@ -36,23 +66,15 @@ function createSCC<P = unknown, S = unknown, C = unknown>({
     constructor(props: P) {
       super(props)
 
-      let initialState = state
-
-      if (typeof state === 'function') {
-        initialState = state(props)
+      if (this.isValidState(state)) {
+        this.state = {
+          internalState: state.currentValue
+        }
       }
-
-      this.state = {
-        internalState: initialState,
-        globalState: ReactiveState.is(globalState) ? globalState.currentValue : undefined,
-      }
-      this.reactiveState = new ReactiveState(initialState)
-      
 
       if (controller && typeof controller === 'function') {
         const cv = controller({
           props,
-          state: this.reactiveState,
           beforeUpdate: (fn) => this.createLCListener('beforeUpdate', fn),
           onMount: (fn) => this.createLCListener('onMount', fn),
           afterUpdate: (fn) => this.createLCListener('afterUpdate', fn),
@@ -60,58 +82,47 @@ function createSCC<P = unknown, S = unknown, C = unknown>({
         })
 
         if (cv) {
-          this.controllerValue = cv
+          this.cv = cv
         }
       }
     }
 
     componentDidMount() {
-      this.initStateSubscribe()
-      this.listeners.onMount()
+      this.iss()
+      this.lunr.onMount()
     }
 
     getSnapshotBeforeUpdate() {
-      this.listeners.beforeUpdate(this.props)
+      this.lunr.beforeUpdate(this.props)
       return null
     }
 
     componentDidUpdate(props: P) {
-      this.listeners.afterUpdate(props)
+      this.lunr.afterUpdate(props)
     }
 
     componentWillUnmount() {
-      this.unsubscribeState()
-      if (typeof this.unsubscribeGlobalState === 'function') {
-        this.unsubscribeGlobalState()
+      if (typeof this.us === 'function') {
+        this.us()
       }
-      this.listeners.onDestroy()
+      this.lunr.onDestroy()
     }
 
     createLCListener(name: string, fn: unknown) {
       if (fn && typeof fn === 'function') {
-        this.listeners[name] = fn
+        this.lunr[name] = fn
       }
     }
 
-    initStateSubscribe() {
-      if (this.reactiveState) {
-        this.unsubscribeState = this.reactiveState.subscribe((newState) => {
-          this.setState((prevState) => {
-            return {
-              globalState: prevState.globalState,
-              internalState: newState,
-            }
-          })
-        })
-      }
+    isValidState(state: any): state is { subscribe: (fn: (s: any) => void) => () => void, currentValue: any } {
+      return state && typeof state === 'object' && typeof state.subscribe === 'function';
+    }
 
-      if (ReactiveState.is(globalState)) {
-        this.unsubscribeGlobalState = globalState.subscribe((newState) => {
-          this.setState((prevState) => {
-            return {
-              internalState: prevState.internalState,
-              globalState: newState,
-            }
+    iss() {
+      if (this.isValidState(state)) {
+        this.us = state.subscribe((newState) => {
+          this.setState({
+            internalState: newState,
           })
         })
       }
@@ -124,8 +135,7 @@ function createSCC<P = unknown, S = unknown, C = unknown>({
 
       return component({
         ...this.props,
-        ctrlValue: this.controllerValue,
-        state: this.state.internalState,
+        ctrlValue: this.cv,
       })
     }
   }

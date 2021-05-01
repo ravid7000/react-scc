@@ -1,5 +1,5 @@
 import React from 'react';
-import createSCC from 'react-scc';
+import { createSCC, writable } from 'react-scc';
 
 interface TodoFormProps {
   onSubmit?: (value: string) => void
@@ -10,9 +10,12 @@ interface ControllerValue {
   handleSubmit: (evt: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const TodoForm = createSCC<TodoFormProps, string, ControllerValue>({
-  state: '',
-  controller: ({ state, props }) => {
+const state = writable('')
+
+const TodoForm = createSCC<TodoFormProps, ControllerValue>({
+  state,
+  displayName: 'TodoForm',
+  controller: ({ props }) => {
     return {
       handleChange: (evt) => {
         state.update(() => evt.target.value);
@@ -26,10 +29,10 @@ const TodoForm = createSCC<TodoFormProps, string, ControllerValue>({
       }
     }
   },
-  component: ({ state, ctrlValue }) => {
+  component: ({ ctrlValue }) => {
     return (
       <form className="todo-form" onSubmit={ctrlValue.handleSubmit}>
-        <input type="text" placeholder="Type and press enter" value={state} onChange={ctrlValue.handleChange} />
+        <input type="text" placeholder="Type and press enter" value={state.currentValue} onChange={ctrlValue.handleChange} />
       </form>
     )
   }

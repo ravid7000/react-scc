@@ -1,4 +1,4 @@
-import createSCC from 'react-scc';
+import { createSCC } from 'react-scc';
 
 import globalState from './store';
 
@@ -12,14 +12,11 @@ interface ControllerValue {
   deleteTodo: (id: number) => void;
 }
 
-const App = createSCC<unknown, number, ControllerValue>({
-  state: 0,
-  globalState,
-  controller: ({ state, onDestroy }) => {
-    onDestroy(globalState.subscribe(gs => {
-      state.update(() => gs.filter(item => item.done).length);
-    }))
 
+const App = createSCC<unknown, ControllerValue>({
+  state: globalState,
+  displayName: 'App',
+  controller: () => {
     return {
       addTodo: (title) => {
         globalState.update(state => [{ done: false, title, id: Date.now() }, ...state]);
@@ -34,23 +31,25 @@ const App = createSCC<unknown, number, ControllerValue>({
       },
       deleteTodo: (id) => {
         globalState.update(state => state.filter(todo => todo.id !== id))
-      }
+      },
     };
   },
-  component: ({ state, ctrlValue }) => {
+  component: ({ ctrlValue }) => {
     return (
       <div className="App">
-        <TodoForm onSubmit={ctrlValue.addTodo} />
-        <p className="total-count">All: {globalState.currentValue.length}, Finished: {state}</p>
-        {globalState.currentValue.map((item) => (
-          <TodoItem
+        <div className="app-wrapper">
+          <TodoForm onSubmit={ctrlValue.addTodo} />
+          {globalState.currentValue.map((item) => (
+            <TodoItem
             key={item.id}
             done={item.done}
             title={item.title}
             onClick={() => ctrlValue.toggleTodoItem(item.id)}
             onDelete={() => ctrlValue.deleteTodo(item.id)}
-          />
-        ))}
+            />
+          ))}
+          <p className="total-count">All: {globalState.currentValue.length}, Finished: {globalState.doneTodo}</p>
+        </div>
       </div>
     )
   }

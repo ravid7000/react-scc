@@ -1,8 +1,18 @@
-import { ReactiveState } from 'react-scc'
+import { WritableState } from 'react-scc'
 
 const key = 'todoStore';
 
 type TodoStore = { done: boolean, title: string, id: number }[]
+
+class ComplexState extends WritableState<TodoStore> {
+  get doneTodo() {
+    return this.currentValue.filter(todo => todo.done).length
+  }
+
+  get pending() {
+    return this.currentValue.filter(todo => !todo.done).length
+  }
+}
 
 // persist store value in localStorage
 function createPersistedStore() {
@@ -16,7 +26,7 @@ function createPersistedStore() {
     }
   }
 
-  const store = new ReactiveState(initialState)
+  const store = new ComplexState(initialState)
 
   if (typeof window !== undefined) {
     store.subscribe(state => {
@@ -27,4 +37,6 @@ function createPersistedStore() {
   return store;
 }
 
-export default createPersistedStore();
+const store = createPersistedStore();
+
+export default store;

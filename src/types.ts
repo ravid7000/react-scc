@@ -8,9 +8,8 @@ export type BeforeUpdate<P = unknown> = (fn: (props: P) => void) => void
 
 export type AfterUpdate<P = unknown> = BeforeUpdate<P>
 
-export type Controller<P = unknown, S = unknown, C = unknown> = (args: {
+export type Controller<P = unknown, C = unknown> = (args: {
   props: P
-  state: S
   /* LIFE CYCLES */
   onMount: OnMount
   onDestroy: OnDestroy
@@ -18,6 +17,6 @@ export type Controller<P = unknown, S = unknown, C = unknown> = (args: {
   afterUpdate: AfterUpdate
 }) => C
 
-export type Component<P = unknown, S = unknown, C = unknown> = (
-  props: P & { ctrlValue: C, state: S }
+export type Component<P = unknown, C = unknown> = (
+  props: P & { ctrlValue: C }
 ) => JSX.Element

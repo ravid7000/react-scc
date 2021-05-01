@@ -3,8 +3,8 @@
 }
 
 :root {
-  --fg-color: #ecedf0;
-  --bg-color: #282c34;
+  --fg-color: #282c34;
+  --bg-color: #eeeff2;
   --bg-light: #676d79;
   --spacing: 16px;
   --border-radius: 8px;
@@ -38,7 +38,6 @@ code {
 
 .todo-form {
   display: block;
-  margin-bottom: calc(var(--spacing) + 8px);
 }
 
 .todo-form input {
@@ -47,8 +46,7 @@ code {
   padding: var(--spacing);
   font-size: 1.5rem;
   border: 0;
-  border-radius: var(--border-radius);
-  background-color: var(--fg-color);
+  background-color: transparent;
 }
 
 .todo-form input:focus {
@@ -58,11 +56,9 @@ code {
 .todo-item {
   display: flex;
   align-items: center;
-  color: var(--bg-color);
-  border-radius: var(--border-radius);
-  background-color: var(--fg-color);
-  margin-bottom: var(--spacing);
+  color: var(--fg-color);
   padding: var(--spacing);
+  border-top: 1px solid #dcdcdc;
 }
 
 .todo-item .todo-checkbox {
@@ -81,14 +77,19 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1rem;
   cursor: pointer;
   width: 30px;
   height: 30px;
+  border: 1px solid #dcdcdc;
+  color: var(--bg-light);
+  border-radius: var(--border-radius);
 }
 
 .todo-item .todo-title {
   flex: 1;
+  word-break: break-word;
+  padding-right: var(--spacing);
 }
 
 .todo-item.done .todo-title {
@@ -107,5 +108,16 @@ code {
 }
 
 .total-count {
-  font-size: 1.4rem;
+  padding: var(--spacing);
+  margin: 0;
+  border-top: 1px solid #dcdcdc;
+}
+
+.app-wrapper {
+  position: relative;
+  z-index: 10;
+  background-color: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 17%);
 }

@@ -1,5 +1,3 @@
-import reactSCC from './reactSCC';
-
-export default reactSCC;
-export { default as ReactiveState } from './reactiveState';
-export * from './types';
+export { default as createSCC } from './reactSCC'
+export * from './writable'
+export * from './types'
