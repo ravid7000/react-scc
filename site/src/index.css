@@ -16,11 +16,14 @@ body {
   color: var(--fg-color);
   font-size: 20px;
   background-color: var(--bg-color);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inconsolata', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+input, button {
+  font-family: 'Inconsolata', monospace;
+  font-weight: 300;
 }
 
 code {
@@ -29,11 +32,13 @@ code {
 }
 
 .App {
-  max-width: 500px;
+  max-width: 550px;
   margin-left: auto;
   margin-right: auto;
   min-height: 100vh;
   padding-top: 100px;
+  padding-left: var(--spacing);
+  padding-right: var(--spacing);
 }
 
 .todo-form {
@@ -111,6 +116,8 @@ code {
   padding: var(--spacing);
   margin: 0;
   border-top: 1px solid #dcdcdc;
+  display: flex;
+  justify-content: space-between;
 }
 
 .app-wrapper {

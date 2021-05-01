@@ -12,6 +12,10 @@ class ComplexState extends WritableState<TodoStore> {
   get pending() {
     return this.currentValue.filter(todo => !todo.done).length
   }
+
+  get total() {
+    return this.currentValue.length
+  }
 }
 
 // persist store value in localStorage

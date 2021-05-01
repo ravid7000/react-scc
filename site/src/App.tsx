@@ -48,7 +48,7 @@ const App = createSCC<unknown, ControllerValue>({
             onDelete={() => ctrlValue.deleteTodo(item.id)}
             />
           ))}
-          <p className="total-count">All: {globalState.currentValue.length}, Finished: {globalState.doneTodo}</p>
+          <p className="total-count"><div>All: {globalState.total}</div> <div>Pending: {globalState.pending}</div> <div>Finished: {globalState.doneTodo}</div></p>
         </div>
       </div>
     )
