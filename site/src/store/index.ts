@@ -1,4 +1,4 @@
-import { WritableState } from 'react-scc'
+import { WritableState } from 'react-scc/writable'
 
 const key = 'todoStore';
 

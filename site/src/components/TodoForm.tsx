@@ -1,5 +1,5 @@
 import React from 'react';
-import { createSCC } from 'react-scc';
+import createSCC from 'react-scc';
 
 interface TodoFormProps {
   onSubmit?: (value: string) => void

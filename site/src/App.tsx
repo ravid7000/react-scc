@@ -1,4 +1,4 @@
-import { createSCC } from 'react-scc';
+import createSCC from 'react-scc';
 
 import globalState, { createTimeStamp } from './store';
 

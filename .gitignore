@@ -20,3 +20,16 @@ dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# distribution files
+index.es.js
+index.js
+writable.es.js
+writable.js
+index.d.ts
+reactSCC.d.ts
+.gitignore
+utils.d.ts
+writable.d.ts
+.gitignore
+types.d.ts

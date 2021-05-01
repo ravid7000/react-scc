@@ -8,7 +8,7 @@ import bundleSize from 'rollup-plugin-bundle-size';
 
 import pkg from './package.json'
 
-export default {
+export default [{
   input: 'src/index.ts',
   output: [
     {
@@ -19,6 +19,35 @@ export default {
     },
     {
       file: pkg.module,
+      format: 'es',
+      exports: 'named',
+      sourcemap: false,
+    }
+  ],
+  plugins: [
+    external(),
+    url({ exclude: ['**/*.svg'] }),
+    resolve(),
+    typescript(),
+    commonjs({ extensions: ['.js', '.ts'] }),
+    terser({
+      output: {
+        comments: () => false,
+      },
+    }),
+    bundleSize(),
+  ]
+}, {
+  input: 'src/writable.ts',
+  output: [
+    {
+      file: 'writable.js',
+      format: 'cjs',
+      exports: 'named',
+      sourcemap: false
+    },
+    {
+      file: 'writable.es.js',
       format: 'es',
       exports: 'named',
       sourcemap: false
@@ -37,4 +66,4 @@ export default {
     }),
     bundleSize(),
   ]
-}
+}]
