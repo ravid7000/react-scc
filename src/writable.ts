@@ -9,12 +9,11 @@ type ArrayLikeDict = Record<number, any>
 type Callback = (values: ArrayLikeDict) => void
 
 export interface Writable<S> {
-  readonly currentValue: S;
-  subscribe(fn: FN<S>): FNE;
-  set(state: S): void;
-  update(fn: (state: S) => S): void;
+  readonly currentValue: S
+  subscribe(fn: FN<S>): FNE
+  set(state: S): void
+  update(fn: (state: S) => S): void
 }
-
 
 /**
  * Extends WritableState to create complex state
@@ -32,11 +31,11 @@ export class WritableState<S> implements Writable<S> {
    * Subscribe to the state
    * @example
    * const state = writable(0)
-   * 
+   *
    * state.subscribe(currentState => {
    *  console.log({ currentState })
    * })
-   * 
+   *
    * state.set(1)
    * @param fn subscriber function
    */
@@ -69,7 +68,11 @@ export class WritableState<S> implements Writable<S> {
   }
 
   static is(state: any): state is WritableState<any> {
-    return state && typeof state === 'object' && typeof state.subscribe === 'function';
+    return (
+      state &&
+      typeof state === 'object' &&
+      typeof state.subscribe === 'function'
+    )
   }
 
   private $$clUp() {
@@ -82,13 +85,13 @@ export class WritableState<S> implements Writable<S> {
    * Set a new state
    * @example
    * const state = writable(0)
-   * 
+   *
    * state.subscribe(currentState => {
    *  console.log({ currentState })
    * })
-   * 
+   *
    * state.set(1)
-   * 
+   *
    * @param state new state
    */
   set(newState: S) {
@@ -102,14 +105,14 @@ export class WritableState<S> implements Writable<S> {
    * Partial update the state
    * @example
    * const state = writable({ todo: [] })
-   * 
+   *
    * const newTodo = {
    *  title: 'Create a writable state',
    *  done: false,
    * }
-   * 
+   *
    * state.update(todo => [...todo, newTodo])
-   * 
+   *
    * @param fn partial state
    */
   update(fn: (state: S) => S) {
@@ -132,19 +135,19 @@ export function compose(states: Writable<any>[]) {
     if (states && Array.isArray(states) && typeof fn === 'function') {
       states.forEach((state, idx) => {
         if (WritableState.is(state)) {
-          unsubscribes[idx] = state.subscribe(newValue => {
+          unsubscribes[idx] = state.subscribe((newValue) => {
             commonState[idx] = newValue
             if (idx === states.length - 1) {
               fn(commonState)
             }
-          });
+          })
         }
       })
     }
 
     return () => {
       if (unsubscribes && unsubscribes.length) {
-        unsubscribes.forEach(unFn => unFn());
+        unsubscribes.forEach((unFn) => unFn())
       }
     }
   }
@@ -158,7 +161,7 @@ export function compose(states: Writable<any>[]) {
 /**
  * Create an instance of writable state
  * @param state State
- * @returns 
+ * @returns
  */
 export function writable<State>(state: State): Writable<State> {
   return new WritableState(state)
@@ -168,7 +171,7 @@ export function writable<State>(state: State): Writable<State> {
  * Derive values of multiple stores and create single subscriber
  * @example
  * const commonState = combine([state1, state2])
- * 
+ *
  * commonState.subscribe((values) => {
  *  console.log(values) // { 0: state1Value, 1: state2Value }
  * })
@@ -188,14 +191,16 @@ export function combine(stores: Writable<any>[]) {
     if (notEqual(oldValue, nextValue)) {
       values = { ...values, [idx]: nextValue }
       if (subscribers.length) {
-        subscribers.forEach(fn => fn(values))
+        subscribers.forEach((fn) => fn(values))
       }
     }
   }
 
-  unsubscribe = stores.map((store, idx) => store.subscribe((nextValue) => {
-    syncSub(nextValue, idx)
-  }))
+  unsubscribe = stores.map((store, idx) =>
+    store.subscribe((nextValue) => {
+      syncSub(nextValue, idx)
+    })
+  )
 
   return {
     currentValue: values,
@@ -211,14 +216,13 @@ export function combine(stores: Writable<any>[]) {
             subscribers.splice(idx, 1)
 
             if (!subscribers.length) {
-              unsubscribe.forEach(fn => fn())
+              unsubscribe.forEach((fn) => fn())
             }
           }
         }
       }
 
       return noop
-    }
+    },
   }
 }
-

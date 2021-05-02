@@ -7,9 +7,9 @@ import { writable, Writable, WritableState } from './writable'
  * Create an instance of SCC (State, Controller, Component design pattern)
  * @example
  * import { createSCC, writable } from 'react-scc';
- * 
+ *
  * const state = writable(0);
- * 
+ *
  * const App = createSCC({
  *  state,
  *  controller: () => {
@@ -19,9 +19,9 @@ import { writable, Writable, WritableState } from './writable'
  *    // React component
  *  }
  * });
- * 
+ *
  * export default App;
- * 
+ *
  * @param options CreateSCC<Props, State, CtrlValue>
  * @returns JSX.Element | null | undefined
  */
@@ -33,7 +33,7 @@ function createSCC<P = any, S = any, C = any>({
   subscribe,
   defaultProps,
 }: CreateSCC<P, S, C>) {
-  return class SCC extends React.PureComponent<P, { in: S, out: any }> {
+  return class SCC extends React.PureComponent<P, { in: S; out: any }> {
     static displayName = displayName
 
     static defaultProps = defaultProps

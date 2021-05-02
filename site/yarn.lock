@@ -9071,8 +9071,10 @@ react-refresh@^0.8.3:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.8.3.tgz#721d4657672d400c5e3c75d063c4a85fb2d5d68f"
   integrity sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==
 
-"react-scc@file:..":
-  version "1.0.0"
+react-scc@^0.0.0-beta-1:
+  version "0.0.0-beta-1"
+  resolved "https://registry.yarnpkg.com/react-scc/-/react-scc-0.0.0-beta-1.tgz#d4957eb8dd6484ddcd25393dce056d98b722f0c4"
+  integrity sha512-HDwW/aCjDPne3JnepT87Uhq5YUwQYqZPAxIW3ObebdoHpLgbL+cqzxPcj608xEsYLTQn5c/NJTFxjMgDISeAtA==
 
 react-scripts@4.0.3:
   version "4.0.3"

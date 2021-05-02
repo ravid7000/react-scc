@@ -1,4 +1,4 @@
-import { Writable } from "./writable"
+import { Writable } from './writable'
 
 export type FN = () => void
 
@@ -21,7 +21,7 @@ export type Controller<P, S, C> = (args: {
 }) => C
 
 export type Component<P, S, C> = (
-  props: P & { ctrlValue: C, state: S }
+  props: P & { ctrlValue: C; state: S }
 ) => JSX.Element | null | undefined
 
 export type CreateSCC<P, S, C> = {
@@ -48,5 +48,5 @@ export type CreateSCC<P, S, C> = {
   /**
    * Component default props
    */
-   defaultProps?: Partial<P>
+  defaultProps?: Partial<P>
 }

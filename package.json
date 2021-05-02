@@ -1,6 +1,6 @@
 {
   "name": "react-scc",
-  "version": "0.0.0-beta-0",
+  "version": "0.0.0-beta-1",
   "description": "React Js design pattern for creating components",
   "author": "ravid7000",
   "license": "MIT",
@@ -15,7 +15,9 @@
   },
   "files": [
     "index.*",
-    "writable.*"
+    "writable.*",
+    "types.d.ts",
+    "utils.d.ts"
   ],
   "exports": {
     "./packages.json": "./package.json",
@@ -34,9 +36,9 @@
     "build": "rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir .",
     "start": "rollup -c -w",
     "deploy": "gh-pages -d example/build",
-    "format": "prettier --write src/**/*.ts{,x}",
-    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
-    "prepare": "npm run build"
+    "format": "prettier --write src/**/*.ts",
+    "lint": "tsc --noEmit && eslint src/**/*.ts",
+    "prepublishOnly": "yarn format && yarn build"
   },
   "dependencies": {},
   "peerDependencies": {
