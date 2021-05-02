@@ -1,0 +1,13 @@
+<!DOCTYPE html><html lang=en><head><meta charset=UTF-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><title>Document</title><link rel=stylesheet href=./assets/base.css></head><body><p>some html here</p><h2 id=markdown-heading>markdown heading</h2><pre><code class=language-jsx>import createSCC from &#39;react-scc&#39;
+
+const App = createSCC({
+  state: 0,
+  component: ({ state }) =&gt; {
+    return &lt;div&gt;counter: {state}&lt;/div&gt;
+  }
+})
+
+export default App
+</code></pre><pre><code class=language-sh>npm install react-scc
+</code></pre><p>or using yarn</p><pre><code class=language-sh>yarn add react-scc
+</code></pre><div class=sidebar>main sidebar</div><p>quick change after sidebar</p><link rel=stylesheet href=./assets/prism.css><script src=./assets/prism.js></script></body></html>
