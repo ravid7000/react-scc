@@ -36,7 +36,7 @@ interface State {
   pos: ANIMATE_POS;
 }
 
-const Transition = createSCC<TransitionProps, State, { ref: (el: HTMLDivElement) => void }>({
+const Transition = createSCC<TransitionProps, State>({
   state: {
     duration: 300,
     pos: ANIMATE_POS.UNMOUNTED
@@ -48,7 +48,6 @@ const Transition = createSCC<TransitionProps, State, { ref: (el: HTMLDivElement)
   },
   controller: ({ props, state, onMount, afterUpdate, onDestroy }) => {
     let timer: any;
-    let el: HTMLDivElement;
 
     state.set({
       duration: props.duration || 300,
@@ -76,12 +75,6 @@ const Transition = createSCC<TransitionProps, State, { ref: (el: HTMLDivElement)
     onDestroy(() => {
       clearTimeout(timer)
     })
-
-    return {
-      ref: (elm) => {
-        el = elm
-      },
-    }
   },
   component: ({ children, enterTransition, exitTransition, state, ctrlValue, className }) => {
     if (state.pos === ANIMATE_POS.UNMOUNTED || !children) {
@@ -94,7 +87,7 @@ const Transition = createSCC<TransitionProps, State, { ref: (el: HTMLDivElement)
 
     const combineClassNames = `${className || ''} ${transitionClass || ''}`.trim()
 
-    return <div ref={ctrlValue.ref} className={combineClassNames === '' ? undefined : combineClassNames}>{React.cloneElement(children as any, { transitionState: state.pos })}</div>
+    return <div className={combineClassNames === '' ? undefined : combineClassNames}>{React.cloneElement(children as any, { transitionState: state.pos })}</div>
   }
 })
 
