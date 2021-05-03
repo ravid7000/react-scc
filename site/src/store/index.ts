@@ -2,7 +2,7 @@ import { WritableState } from 'react-scc/writable'
 
 const key = 'todoStore';
 
-type TodoStore = { done: boolean, title: string, id: number, timestamp: string }[]
+type TodoStore = { done: boolean, title: string, id: number, timestamp: string, visible: boolean }[]
 
 class ComplexState extends WritableState<TodoStore> {
   get doneTodo() {

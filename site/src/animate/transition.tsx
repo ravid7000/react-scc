@@ -29,6 +29,14 @@ export interface TransitionProps {
    * className
    */
   className?: string;
+  /**
+   * Callback after component is exited
+   */
+  onExit?: () => void;
+  /**
+   * Callback on mounted component
+   */
+  onEnter?: () => void;
 }
 
 interface State {
@@ -46,8 +54,10 @@ const Transition = createSCC<TransitionProps, State>({
     enterTransition: 'fadeIn',
     exitTransition: 'fadeOut',
   },
-  controller: ({ props, state, onMount, afterUpdate, onDestroy }) => {
+  controller: ({ props, state, onMount, beforeUpdate, onDestroy }) => {
     let timer: any;
+
+    let once = false
 
     state.set({
       duration: props.duration || 300,
@@ -59,24 +69,35 @@ const Transition = createSCC<TransitionProps, State>({
         state.update(curr => ({ ...curr, pos: ANIMATE_POS.ENTERING }))
         timer = setTimeout(() => {
           state.update(curr => ({ ...curr, pos: ANIMATE_POS.ENTERED }))
+          if (typeof props.onEnter === 'function') {
+            props.onEnter()
+          }
         }, state.currentValue.duration)
       }
     })
 
-    afterUpdate((nextProps) => {
-      if (!nextProps.in) {
+    beforeUpdate((nextProps) => {
+      if (!nextProps.in && !once) {
         state.update(curr => ({ ...curr, pos: ANIMATE_POS.EXITING }))
         timer = setTimeout(() => {
           state.update(curr => ({ ...curr, pos: ANIMATE_POS.UNMOUNTED }))
+          if (typeof props.onExit === 'function') {
+            props.onExit()
+          }
         }, state.currentValue.duration)
+
+        once = true
       }
     })
 
     onDestroy(() => {
       clearTimeout(timer)
+      if (typeof props.onExit === 'function') {
+        props.onExit()
+      }
     })
   },
-  component: ({ children, enterTransition, exitTransition, state, ctrlValue, className }) => {
+  component: ({ children, enterTransition, exitTransition, state, className }) => {
     if (state.pos === ANIMATE_POS.UNMOUNTED || !children) {
       return null
     }

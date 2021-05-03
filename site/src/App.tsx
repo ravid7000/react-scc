@@ -10,6 +10,7 @@ import Transition from './animate/transition';
 interface ControllerValue {
   addTodo: (title: string) => void;
   toggleTodoItem: (id: number) => void;
+  hideTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
 }
 
@@ -21,7 +22,7 @@ const App = createSCC<unknown, undefined, ControllerValue>({
   controller: () => {
     return {
       addTodo: (title) => {
-        globalState.update(state => [{ done: false, title, id: Date.now(), timestamp: createTimeStamp() }, ...state]);
+        globalState.update(state => [{ done: false, title, id: Date.now(), timestamp: createTimeStamp(), visible: true }, ...state]);
       },
       toggleTodoItem: (id) => {
         globalState.update(state => state.map((item) => {
@@ -29,6 +30,14 @@ const App = createSCC<unknown, undefined, ControllerValue>({
             item.done = !item.done
           }
           return item;
+        }))
+      },
+      hideTodo: (id) => {
+        globalState.update(state => state.map(todo => {
+          if (todo.id === id) {
+            todo.visible = false
+          }
+          return todo
         }))
       },
       deleteTodo: (id) => {
@@ -44,14 +53,14 @@ const App = createSCC<unknown, undefined, ControllerValue>({
           <TodoForm onSubmit={ctrlValue.addTodo} />
           <div className="app-content">
             {globalState.currentValue.map((item) => (
-              <Transition duration={200} in key={item.id}>
+              <Transition duration={200} in={item.visible} key={item.id} onExit={() => ctrlValue.deleteTodo(item.id)}>
                 <TodoItem
                   key={item.id}
                   done={item.done}
                   title={item.title}
                   timestamp={item.timestamp}
                   onClick={() => ctrlValue.toggleTodoItem(item.id)}
-                  onDelete={() => ctrlValue.deleteTodo(item.id)}
+                  onDelete={() => ctrlValue.hideTodo(item.id)}
                 />
               </Transition>
             ))}

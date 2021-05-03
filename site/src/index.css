@@ -141,6 +141,7 @@ code {
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 17%);
+  transition: all 0.3s;
 }
 
 .app-content {
@@ -165,14 +166,28 @@ code {
 
 @keyframes slideInDown {
   from {
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
     visibility: visible;
   }
 
   to {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  to {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
   }
 }
 
@@ -186,6 +201,6 @@ code {
   }
 }
 .fadeOut {
-  animation-name: fadeOut;
+  animation-name: slideInUp;
   animation-duration: 0.3s;
 }
