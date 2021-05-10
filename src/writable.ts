@@ -11,7 +11,7 @@ type Callback = (values: ArrayLikeDict) => void
 type StartFn<S> = (set: (state: S) => void, value: S) => void
 
 export interface Readable<S> {
-  readonly value: S;
+  readonly value: S
   /**
    * Subscribe to the state
    * @example
@@ -65,9 +65,7 @@ export interface Writable<S> extends Readable<S> {
  */
 export function isState(state: any): state is Writable<any> {
   return (
-    state &&
-    typeof state === 'object' &&
-    typeof state.subscribe === 'function'
+    state && typeof state === 'object' && typeof state.subscribe === 'function'
   )
 }
 
@@ -100,7 +98,7 @@ export function writable<S>(state: S): Writable<S> {
 
   const updateListeners = () => {
     if (listeners.length) {
-      listeners.forEach(fn => fn(value))
+      listeners.forEach((fn) => fn(value))
     }
   }
 
@@ -129,19 +127,22 @@ export function writable<S>(state: S): Writable<S> {
  * @param start Callback function to update the state
  * @example
  * import { readable } from 'react-scc/writable'
- * 
+ *
  * const readOnlyState = readable(0, (set, value) => {
  *  setTimeout(() => {
  *    set(value + 1)
  *  }, 1000)
  * })
- * 
+ *
  * readOnlyState.subscribe((nextValue) => {
  *  console.log(nextValue)
  * })
  * @returns Subscribable state
  */
-export function readable<State>(state: State, start?: StartFn<State>): Readable<State> {
+export function readable<State>(
+  state: State,
+  start?: StartFn<State>
+): Readable<State> {
   const readableState = writable(state)
 
   if (typeof start === 'function') {
