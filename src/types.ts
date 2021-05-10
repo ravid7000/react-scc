@@ -1,4 +1,4 @@
-import { Writable } from './writable'
+import { Writable } from './store'
 
 export type FN = () => void
 

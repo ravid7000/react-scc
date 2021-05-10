@@ -25,9 +25,9 @@ yarn-error.log*
 /index.es.js
 /index.js
 /index.d.ts
-/writable.es.js
-/writable.js
-/writable.d.ts
+/store.es.js
+/store.js
+/store.d.ts
 /reactSCC.d.ts
 /utils.d.ts
 /types.d.ts

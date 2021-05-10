@@ -1,7 +1,7 @@
 import React from 'react'
 import { noop } from './utils'
 import { CreateSCC } from './types'
-import { writable, Writable, isState } from './writable'
+import { writable, Writable, isState } from './store'
 
 /**
  * Create an instance of SCC (State, Controller, Component design pattern)
