@@ -1,4 +1,4 @@
-import { noop, notEqual } from './utils'
+import { isFunction, noop, notEqual } from './utils'
 
 type FN<S> = (state: S) => void
 
@@ -8,25 +8,10 @@ type ArrayLikeDict = Record<number, any>
 
 type Callback = (values: ArrayLikeDict) => void
 
-export interface Writable<S> {
-  readonly currentValue: S
-  subscribe(fn: FN<S>): FNE
-  set(state: S): void
-  update(fn: (state: S) => S): void
-}
+type StartFn<S> = (set: (state: S) => void, value: S) => void
 
-/**
- * Extends WritableState to create complex state
- */
-export class WritableState<S> implements Writable<S> {
-  private $intSt: S
-
-  private listeners: Array<FN<S>> = []
-
-  constructor(state: S) {
-    this.$intSt = state
-  }
-
+export interface Readable<S> {
+  readonly value: S;
   /**
    * Subscribe to the state
    * @example
@@ -39,48 +24,9 @@ export class WritableState<S> implements Writable<S> {
    * state.set(1)
    * @param fn subscriber function
    */
-  subscribe(fn: FN<S>): FNE {
-    if (fn && typeof fn === 'function') {
-      this.listeners.push(fn)
-
-      fn(this.$intSt)
-
-      return () => {
-        const idx = this.listeners.indexOf(fn)
-        if (idx > -1) {
-          this.listeners.splice(idx, 1)
-        }
-      }
-    }
-
-    return noop
-  }
-
-  /**
-   * Get currentValue of state. This is readOnly property
-   */
-  get currentValue() {
-    return this.$intSt
-  }
-
-  set currentValue(_s) {
-    throw new Error('Read Only property "currentValue" cannot be modified')
-  }
-
-  static is(state: any): state is WritableState<any> {
-    return (
-      state &&
-      typeof state === 'object' &&
-      typeof state.subscribe === 'function'
-    )
-  }
-
-  private $$clUp() {
-    this.listeners.forEach((fn) => {
-      fn(this.$intSt)
-    })
-  }
-
+  subscribe(fn: FN<S>): FNE
+}
+export interface Writable<S> extends Readable<S> {
   /**
    * Set a new state
    * @example
@@ -94,13 +40,7 @@ export class WritableState<S> implements Writable<S> {
    *
    * @param state new state
    */
-  set(newState: S) {
-    if (notEqual(newState, this.$intSt)) {
-      this.$intSt = newState
-      this.$$clUp()
-    }
-  }
-
+  set(state: S): void
   /**
    * Partial update the state
    * @example
@@ -115,56 +55,117 @@ export class WritableState<S> implements Writable<S> {
    *
    * @param fn partial state
    */
-  update(fn: (state: S) => S) {
-    if (fn && typeof fn === 'function') {
-      const nextState = fn(this.$intSt)
-
-      if (notEqual(nextState, this.$intSt)) {
-        this.$intSt = nextState
-        this.$$clUp()
-      }
-    }
-  }
+  update(fn: (state: S) => S): void
 }
 
-export function compose(states: Writable<any>[]) {
-  const commonState: Record<number, unknown> = {}
-  const unsubscribes: FNE[] = []
-
-  const subscribe = (fn: FN<any>) => {
-    if (states && Array.isArray(states) && typeof fn === 'function') {
-      states.forEach((state, idx) => {
-        if (WritableState.is(state)) {
-          unsubscribes[idx] = state.subscribe((newValue) => {
-            commonState[idx] = newValue
-            if (idx === states.length - 1) {
-              fn(commonState)
-            }
-          })
-        }
-      })
-    }
-
-    return () => {
-      if (unsubscribes && unsubscribes.length) {
-        unsubscribes.forEach((unFn) => unFn())
-      }
-    }
-  }
-
-  return {
-    currentValue: commonState,
-    subscribe,
-  }
+/**
+ * Check if state is Writable
+ * @param state any
+ * @returns is Writable state
+ */
+export function isState(state: any): state is Writable<any> {
+  return (
+    state &&
+    typeof state === 'object' &&
+    typeof state.subscribe === 'function'
+  )
 }
 
 /**
  * Create an instance of writable state
  * @param state State
- * @returns
+ * @returns Subscribable state
  */
-export function writable<State>(state: State): Writable<State> {
-  return new WritableState(state)
+export function writable<S>(state: S): Writable<S> {
+  const listeners: Array<FN<S>> = []
+
+  let value = state
+
+  const subscribe: Writable<S>['subscribe'] = (fn) => {
+    if (isFunction(fn)) {
+      listeners.push(fn)
+
+      fn(value)
+
+      return () => {
+        const idx = listeners.indexOf(fn)
+        if (idx > -1) {
+          listeners.splice(idx, 1)
+        }
+      }
+    }
+
+    return noop
+  }
+
+  const updateListeners = () => {
+    if (listeners.length) {
+      listeners.forEach(fn => fn(value))
+    }
+  }
+
+  const set: Writable<S>['set'] = (nextState: S) => {
+    if (notEqual(value, nextState)) {
+      value = nextState
+      updateListeners()
+    }
+  }
+
+  const update: Writable<S>['update'] = (fn) => {
+    set(fn(value))
+  }
+
+  return {
+    value,
+    subscribe,
+    set,
+    update,
+  }
+}
+
+/**
+ * Create a readonly state
+ * @param state any
+ * @param start Callback function to update the state
+ * @example
+ * import { readable } from 'react-scc/writable'
+ * 
+ * const readOnlyState = readable(0, (set, value) => {
+ *  setTimeout(() => {
+ *    set(value + 1)
+ *  }, 1000)
+ * })
+ * 
+ * readOnlyState.subscribe((nextValue) => {
+ *  console.log(nextValue)
+ * })
+ * @returns Subscribable state
+ */
+export function readable<State>(state: State, start?: StartFn<State>): Readable<State> {
+  const readableState = writable(state)
+
+  if (typeof start === 'function') {
+    start(readableState.set, readableState.value)
+  }
+
+  return {
+    value: readableState.value,
+    subscribe: readableState.subscribe,
+  }
+}
+
+/**
+ * Subscribe to Readable | Writable state
+ * @param state Writable<any> | Readable<any>
+ * @param callback Subscriber
+ * @returns Unsubscribe
+ */
+export function subscribe(state: Writable<any> | Readable<any>, callback: FNE) {
+  if (!state) {
+    return noop
+  }
+
+  return state.subscribe(callback)
 }
 
 /**
@@ -175,8 +176,8 @@ export function writable<State>(state: State): Writable<State> {
  * commonState.subscribe((values) => {
  *  console.log(values) // { 0: state1Value, 1: state2Value }
  * })
- * @param stores Writable<any>[]
- * @returns { currentValue: any[], subscribe:  }
+ * @param stores Writable<any>[] | Readable<any>[]
+ * @returns Subscribable state
  */
 export function combine(stores: Writable<any>[]) {
   const subscribers: Callback[] = []
@@ -203,7 +204,7 @@ export function combine(stores: Writable<any>[]) {
   )
 
   return {
-    currentValue: values,
+    value: values,
     subscribe: (fn: Callback) => {
       if (fn && typeof fn === 'function') {
         subscribers.push(fn)

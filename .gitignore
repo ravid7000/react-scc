@@ -22,14 +22,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # distribution files
-index.es.js
-index.js
-writable.es.js
-writable.js
-index.d.ts
-reactSCC.d.ts
-.gitignore
-utils.d.ts
-writable.d.ts
-.gitignore
-types.d.ts
+/index.es.js
+/index.js
+/index.d.ts
+/writable.es.js
+/writable.js
+/writable.d.ts
+/reactSCC.d.ts
+/utils.d.ts
+/types.d.ts

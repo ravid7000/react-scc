@@ -1,17 +1,15 @@
 import React from 'react'
 import { noop } from './utils'
 import { CreateSCC } from './types'
-import { writable, Writable, WritableState } from './writable'
+import { writable, Writable, isState } from './writable'
 
 /**
  * Create an instance of SCC (State, Controller, Component design pattern)
  * @example
  * import { createSCC, writable } from 'react-scc';
  *
- * const state = writable(0);
- *
  * const App = createSCC({
- *  state,
+ *  state: 0,
  *  controller: () => {
  *    ...
  *  },
@@ -74,8 +72,8 @@ function createSCC<P = any, S = any, C = any>({
       }
 
       this.state = {
-        in: this.intSt.currentValue,
-        out: WritableState.is(subscribe) ? subscribe.currentValue : null,
+        in: this.intSt.value,
+        out: isState(subscribe) ? subscribe.value : null,
       }
     }
 
@@ -114,7 +112,7 @@ function createSCC<P = any, S = any, C = any>({
           out: prevState.out,
         }))
       })
-      if (WritableState.is(subscribe)) {
+      if (isState(subscribe)) {
         this.outUs = subscribe.subscribe((newState) => {
           this.setState((prevState) => ({
             in: prevState.in,
