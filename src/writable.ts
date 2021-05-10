@@ -8,10 +8,19 @@ type ArrayLikeDict = Record<number, any>
 
 type Callback = (values: ArrayLikeDict) => void
 
-type StartFn<S> = (set: (state: S) => void, value: S) => void
+type StartFn<S> = (set: (state: S) => void) => void
 
 export interface Readable<S> {
-  readonly value: S
+  /**
+   * Get current value of state or use get()
+   * @example
+   * const counter = writable(0)
+   * 
+   * counter.get() // 0
+   * or
+   * get(counter) // 0
+   */
+  get(): S
   /**
    * Subscribe to the state
    * @example
@@ -70,6 +79,18 @@ export function isState(state: any): state is Writable<any> {
 }
 
 /**
+ * Get value of Writable | Readable state
+ * @param state Writable | Readable
+ * @returns state value
+ */
+ export function get<T>(state: Writable<T> | Readable<T>): T {
+  let val: T
+  state.subscribe(_ => val = _)
+  // @ts-ignore
+  return val
+}
+
+/**
  * Create an instance of writable state
  * @param state State
  * @returns Subscribable state
@@ -102,6 +123,8 @@ export function writable<S>(state: S): Writable<S> {
     }
   }
 
+  const get: Writable<S>['get'] = () => value
+
   const set: Writable<S>['set'] = (nextState: S) => {
     if (notEqual(value, nextState)) {
       value = nextState
@@ -114,7 +137,7 @@ export function writable<S>(state: S): Writable<S> {
   }
 
   return {
-    value,
+    get,
     subscribe,
     set,
     update,
@@ -146,11 +169,11 @@ export function readable<State>(
   const readableState = writable(state)
 
   if (typeof start === 'function') {
-    start(readableState.set, readableState.value)
+    start(readableState.set)
   }
 
   return {
-    value: readableState.value,
+    get: () => get(readableState),
     subscribe: readableState.subscribe,
   }
 }
@@ -205,9 +228,9 @@ export function combine(stores: Writable<any>[]) {
   )
 
   return {
-    value: values,
+    get: () => values,
     subscribe: (fn: Callback) => {
-      if (fn && typeof fn === 'function') {
+      if (isFunction(fn)) {
         subscribers.push(fn)
 
         fn(values)

@@ -72,8 +72,8 @@ function createSCC<P = any, S = any, C = any>({
       }
 
       this.state = {
-        in: this.intSt.value,
-        out: isState(subscribe) ? subscribe.value : null,
+        in: this.intSt.get(),
+        out: isState(subscribe) ? subscribe.get() : null,
       }
     }
 
