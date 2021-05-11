@@ -83,7 +83,7 @@ export function isState(state: any): state is Writable<any> {
  * @param state Writable | Readable
  * @returns state value
  */
- export function get<T>(state: Writable<T> | Readable<T>): T {
+export function get<T>(state: Writable<T> | Readable<T>): T {
   let val: T
   state.subscribe(_ => val = _)
   // @ts-ignore
