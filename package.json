@@ -5,41 +5,52 @@
   "author": "ravid7000",
   "license": "MIT",
   "repository": "ravid7000/react-scc",
-  "main": "index.js",
-  "module": "index.es.js",
-  "types": "index.d.ts",
-  "jsnext:main": "index.es.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "jsnext:main": "dist/index.es.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "files": [
-    "index.*",
-    "writable.*",
-    "types.d.ts",
-    "utils.d.ts"
+    "dist/*"
   ],
   "exports": {
     "./packages.json": "./package.json",
     ".": {
-      "import": "./index.es.js",
-      "require": "./index.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js"
     },
-    "./writable": {
-      "import": "./writable.es.js",
-      "require": "./writable.js"
+    "./store": {
+      "import": "./dist/store.es.js",
+      "require": "./dist/store.js"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.es.js",
+      "require": "./dist/hooks/index.js"
+    },
+    "./hooks/core": {
+      "import": "./dist/hooks/core.es.js",
+      "require": "./dist/hooks/core.js"
+    },
+    "./hooks/store": {
+      "import": "./dist/hooks/store.es.js",
+      "require": "./dist/hooks/store.js"
     }
   },
   "scripts": {
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
-    "build": "rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir .",
+    "build": "rm -rf ./dist && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir ./dist",
     "start": "rollup -c -w",
     "deploy": "gh-pages -d example/build",
     "format": "eslint --fix",
     "prepublishOnly": "yarn format && yarn build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "hoist-non-react-statics": "^3.3.2"
+  },
   "peerDependencies": {
     "react": "^16.9.0"
   },
@@ -52,6 +63,7 @@
     "@rollup/plugin-typescript": "^5.0.2",
     "@rollup/plugin-url": "^5.0.1",
     "@testing-library/react-hooks": "^3.2.1",
+    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^23.3.13",
     "@types/react": "^16.7.22",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
@@ -70,7 +82,7 @@
     "react-scripts": "^3.4.0",
     "react-test-renderer": "^16.9.0",
     "rollup": "^2.26.9",
-    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.0.1",

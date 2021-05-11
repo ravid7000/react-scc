@@ -4,24 +4,29 @@ import resolve from '@rollup/plugin-node-resolve'
 import external from 'rollup-plugin-peer-deps-external'
 import url from '@rollup/plugin-url'
 import { terser } from "rollup-plugin-terser";
-import bundleSize from 'rollup-plugin-bundle-size';
+import bundleSize from 'rollup-plugin-filesize';
 
-import pkg from './package.json'
 
-export default [{
-  input: 'src/index.ts',
+const config = [{
+  input: {
+    index: 'src/index.ts',
+    store: 'src/store.ts',
+  },
   output: [
     {
-      file: pkg.main,
+      dir: './dist',
       format: 'cjs',
       exports: 'named',
-      sourcemap: false
+      sourcemap: false,
+      chunkFileNames: '[name]-[hash]-[format].js'
     },
     {
-      file: pkg.module,
+      dir: './dist',
       format: 'es',
       exports: 'named',
       sourcemap: false,
+      entryFileNames: '[name].[format].js',
+      chunkFileNames: '[name]-[hash]-[format].js'
     }
   ],
   plugins: [
@@ -38,19 +43,26 @@ export default [{
     bundleSize(),
   ]
 }, {
-  input: 'src/store.ts',
+  input: {
+    index: 'src/hooks/index.ts',
+    core: 'src/hooks/core.ts',
+    store: 'src/hooks/store.ts',
+  },
   output: [
     {
-      file: 'store.js',
+      dir: './dist/hooks',
       format: 'cjs',
       exports: 'named',
-      sourcemap: false
+      sourcemap: false,
+      chunkFileNames: '[name]-[hash]-[format].js'
     },
     {
-      file: 'store.es.js',
+      dir: './dist/hooks',
       format: 'es',
       exports: 'named',
-      sourcemap: false
+      sourcemap: false,
+      entryFileNames: '[name].[format].js',
+      chunkFileNames: '[name]-[hash]-[format].js'
     }
   ],
   plugins: [
@@ -67,3 +79,5 @@ export default [{
     bundleSize(),
   ]
 }]
+
+export default config

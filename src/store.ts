@@ -8,7 +8,7 @@ type ArrayLikeDict = Record<number, any>
 
 type Callback = (values: ArrayLikeDict) => void
 
-type StartFn<S> = (set: (state: S) => void) => void
+export type StartFn<S> = (set: (state: S) => void) => void
 
 export interface Readable<S> {
   /**

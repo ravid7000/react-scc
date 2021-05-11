@@ -2,7 +2,7 @@ import { Writable } from './store'
 
 export type FN = () => void
 
-export type OnMount = (fn: FN) => void
+export type OnMount = ((fn: FN) => void) | ((fn: FN) => () => void)
 
 export type OnDestroy = OnMount
 
