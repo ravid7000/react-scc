@@ -1,6 +1,8 @@
 import { useRef, useEffect } from 'react'
 import { isFunction } from '../utils'
 
+type EffectFunction = (() => void) | (() => () => void)
+
 /**
  * useOnce only runs once during the initialization of the component
  * 
@@ -38,15 +40,17 @@ export const useSetup = useOnce
  * 
  * @param fn callback function
  */
-export function useMounted(fn: () => void) {
-  useEffect(fn, [])
+export function useMounted(fn: EffectFunction) {
+  useEffect(() => {
+    return fn()
+  }, [])
 }
 
 /**
  * useAfterUpdate hook is called every time after react update the DOM
  * @param fn callback function
  */
-export function useAfterUpdate(fn: () => void) {
+export function useAfterUpdate(fn: EffectFunction) {
   useEffect(fn)
 }
 
@@ -54,7 +58,7 @@ export function useAfterUpdate(fn: () => void) {
  * useAfterUpdateOnce hook is called only once after react update the DOM
  * @param fn callback function
  */
-export function useAfterUpdateOnce(fn: () => void) {
+export function useAfterUpdateOnce(fn: EffectFunction) {
   const once = useRef(true)
 
   useEffect(() => {
@@ -88,7 +92,7 @@ export function useAfterUpdateOnce(fn: () => void) {
  * @param fn callback function
  * @param condition Boolean
  */
-export function useAfterUpdateUntil(fn: () => void, condition: boolean | (() => boolean)) {
+export function useAfterUpdateUntil(fn: EffectFunction, condition: boolean | (() => boolean)) {
   useEffect(() => {
     let result
     let canCall
@@ -112,7 +116,7 @@ export function useAfterUpdateUntil(fn: () => void, condition: boolean | (() => 
  * @param fn callback function
  * @param condition boolean
  */
-export function useAfterUpdateWhen(fn: () => void, condition: boolean | (() => boolean)) {
+export function useAfterUpdateWhen(fn: EffectFunction, condition: boolean | (() => boolean)) {
   useEffect(() => {
     let result
     let canCall
