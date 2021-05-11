@@ -38,16 +38,16 @@ export default [{
     bundleSize(),
   ]
 }, {
-  input: 'src/writable.ts',
+  input: 'src/store.ts',
   output: [
     {
-      file: 'writable.js',
+      file: 'store.js',
       format: 'cjs',
       exports: 'named',
       sourcemap: false
     },
     {
-      file: 'writable.es.js',
+      file: 'store.es.js',
       format: 'es',
       exports: 'named',
       sourcemap: false

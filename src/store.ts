@@ -74,7 +74,7 @@ export interface Writable<S> extends Readable<S> {
  */
 export function isState(state: any): state is Writable<any> {
   return (
-    state && typeof state === 'object' && typeof state.subscribe === 'function'
+    state && typeof state === 'object' && isFunction(state.subscribe)
   )
 }
 
@@ -168,7 +168,7 @@ export function readable<State>(
 ): Readable<State> {
   const readableState = writable(state)
 
-  if (typeof start === 'function') {
+  if (isFunction(start)) {
     start(readableState.set)
   }
 
@@ -176,20 +176,6 @@ export function readable<State>(
     get: () => get(readableState),
     subscribe: readableState.subscribe,
   }
-}
-
-/**
- * Subscribe to Readable | Writable state
- * @param state Writable<any> | Readable<any>
- * @param callback Subscriber
- * @returns Unsubscribe
- */
-export function subscribe(state: Writable<any> | Readable<any>, callback: FNE) {
-  if (!state) {
-    return noop
-  }
-
-  return state.subscribe(callback)
 }
 
 /**

@@ -1,5 +1,5 @@
 import React from 'react'
-import { noop } from './utils'
+import { noop, isFunction } from './utils'
 import { CreateSCC } from './types'
 import { writable, Writable, isState } from './store'
 
@@ -56,7 +56,7 @@ function createSCC<P = any, S = any, C = any>({
 
       this.intSt = writable(state)
 
-      if (controller && typeof controller === 'function') {
+      if (isFunction(controller)) {
         const cv = controller({
           props,
           state: this.intSt,
@@ -93,14 +93,14 @@ function createSCC<P = any, S = any, C = any>({
 
     componentWillUnmount() {
       this.lunr.onDestroy()
-      if (typeof this.outUs === 'function') {
+      if (isFunction(this.outUs)) {
         this.outUs()
       }
       this.inUs()
     }
 
     createLCListener(name: string, fn: unknown) {
-      if (fn && typeof fn === 'function') {
+      if (isFunction(fn)) {
         this.lunr[name] = fn
       }
     }
@@ -123,7 +123,7 @@ function createSCC<P = any, S = any, C = any>({
     }
 
     render() {
-      if (!component || typeof component !== 'function') {
+      if (!component || !isFunction(component)) {
         throw Error('Invalid component type. Component should be a function.')
       }
 
