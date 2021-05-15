@@ -9101,8 +9101,10 @@ react-router@5.2.0:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-scc@../:
-  version "0.0.0-beta-2"
+react-scc@^0.0.0-beta-3:
+  version "0.0.0-beta-3"
+  resolved "https://registry.yarnpkg.com/react-scc/-/react-scc-0.0.0-beta-3.tgz#623c1e1cd3477eecc5d1e4feb8ccfa1f7b80373a"
+  integrity sha512-GZANSWf0aoaFIxtJ0nfwgNWHB2Su1uIbuOFbFvZVaK8gtf+KcSp4wYHBx7lwrTTlEDQgifvAXfcON4dc10JFFg==
   dependencies:
     hoist-non-react-statics "^3.3.2"
 
