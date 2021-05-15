@@ -1,26 +1,26 @@
-import { isFunction, noop, notEqual } from './utils'
+import { isFunction, noop, notEqual } from "./utils";
 
-type FN<S> = (state: S) => void
+type FN<S> = (state: S) => void;
 
-type FNE = () => void
+type FNE = () => void;
 
-type ArrayLikeDict = Record<number, any>
+type ArrayLikeDict = Record<number, any>;
 
-type Callback = (values: ArrayLikeDict) => void
+type Callback = (values: ArrayLikeDict) => void;
 
-export type StartFn<S> = (set: (state: S) => void) => void
+export type StartFn<S> = (set: (state: S) => void) => void;
 
 export interface Readable<S> {
   /**
    * Get current value of state or use get()
    * @example
    * const counter = writable(0)
-   * 
+   *
    * counter.get() // 0
    * or
    * get(counter) // 0
    */
-  get(): S
+  get(): S;
   /**
    * Subscribe to the state
    * @example
@@ -33,7 +33,7 @@ export interface Readable<S> {
    * state.set(1)
    * @param fn subscriber function
    */
-  subscribe(fn: FN<S>): FNE
+  subscribe(fn: FN<S>): FNE;
 }
 export interface Writable<S> extends Readable<S> {
   /**
@@ -49,7 +49,7 @@ export interface Writable<S> extends Readable<S> {
    *
    * @param state new state
    */
-  set(state: S): void
+  set(state: S): void;
   /**
    * Partial update the state
    * @example
@@ -64,7 +64,7 @@ export interface Writable<S> extends Readable<S> {
    *
    * @param fn partial state
    */
-  update(fn: (state: S) => S): void
+  update(fn: (state: S) => S): void;
 }
 
 /**
@@ -73,9 +73,7 @@ export interface Writable<S> extends Readable<S> {
  * @returns is Writable state
  */
 export function isState(state: any): state is Writable<any> {
-  return (
-    state && typeof state === 'object' && isFunction(state.subscribe)
-  )
+  return state && typeof state === "object" && isFunction(state.subscribe);
 }
 
 /**
@@ -84,10 +82,10 @@ export function isState(state: any): state is Writable<any> {
  * @returns state value
  */
 export function get<T>(state: Writable<T> | Readable<T>): T {
-  let val: T
-  state.subscribe(_ => val = _)
+  let val: T;
+  state.subscribe((_) => (val = _));
   // @ts-ignore
-  return val
+  return val;
 }
 
 /**
@@ -96,52 +94,52 @@ export function get<T>(state: Writable<T> | Readable<T>): T {
  * @returns Subscribable state
  */
 export function writable<S>(state: S): Writable<S> {
-  const listeners: Array<FN<S>> = []
+  const listeners: Array<FN<S>> = [];
 
-  let value = state
+  let value = state;
 
-  const subscribe: Writable<S>['subscribe'] = (fn) => {
+  const subscribe: Writable<S>["subscribe"] = (fn) => {
     if (isFunction(fn)) {
-      listeners.push(fn)
+      listeners.push(fn);
 
-      fn(value)
+      fn(value);
 
       return () => {
-        const idx = listeners.indexOf(fn)
+        const idx = listeners.indexOf(fn);
         if (idx > -1) {
-          listeners.splice(idx, 1)
+          listeners.splice(idx, 1);
         }
-      }
+      };
     }
 
-    return noop
-  }
+    return noop;
+  };
 
   const updateListeners = () => {
     if (listeners.length) {
-      listeners.forEach((fn) => fn(value))
+      listeners.forEach((fn) => fn(value));
     }
-  }
+  };
 
-  const get: Writable<S>['get'] = () => value
+  const get: Writable<S>["get"] = () => value;
 
-  const set: Writable<S>['set'] = (nextState: S) => {
+  const set: Writable<S>["set"] = (nextState: S) => {
     if (notEqual(value, nextState)) {
-      value = nextState
-      updateListeners()
+      value = nextState;
+      updateListeners();
     }
-  }
+  };
 
-  const update: Writable<S>['update'] = (fn) => {
-    set(fn(value))
-  }
+  const update: Writable<S>["update"] = (fn) => {
+    set(fn(value));
+  };
 
   return {
     get,
     subscribe,
     set,
     update,
-  }
+  };
 }
 
 /**
@@ -166,16 +164,16 @@ export function readable<State>(
   state: State,
   start?: StartFn<State>
 ): Readable<State> {
-  const readableState = writable(state)
+  const readableState = writable(state);
 
   if (isFunction(start)) {
-    start(readableState.set)
+    start(readableState.set);
   }
 
   return {
     get: () => get(readableState),
     subscribe: readableState.subscribe,
-  }
+  };
 }
 
 /**
@@ -190,50 +188,50 @@ export function readable<State>(
  * @returns Subscribable state
  */
 export function combine(stores: Writable<any>[]) {
-  const subscribers: Callback[] = []
+  const subscribers: Callback[] = [];
 
-  let unsubscribe: FNE[] = []
+  let unsubscribe: FNE[] = [];
 
-  let values: ArrayLikeDict = {}
+  let values: ArrayLikeDict = {};
 
   const syncSub = (nextValue: any, idx: number) => {
-    const oldValue = values[idx]
+    const oldValue = values[idx];
 
     if (notEqual(oldValue, nextValue)) {
-      values = { ...values, [idx]: nextValue }
+      values = { ...values, [idx]: nextValue };
       if (subscribers.length) {
-        subscribers.forEach((fn) => fn(values))
+        subscribers.forEach((fn) => fn(values));
       }
     }
-  }
+  };
 
   unsubscribe = stores.map((store, idx) =>
     store.subscribe((nextValue) => {
-      syncSub(nextValue, idx)
+      syncSub(nextValue, idx);
     })
-  )
+  );
 
   return {
     get: () => values,
     subscribe: (fn: Callback) => {
       if (isFunction(fn)) {
-        subscribers.push(fn)
+        subscribers.push(fn);
 
-        fn(values)
+        fn(values);
 
         return () => {
-          const idx = subscribers.indexOf(fn)
+          const idx = subscribers.indexOf(fn);
           if (idx > -1) {
-            subscribers.splice(idx, 1)
+            subscribers.splice(idx, 1);
 
             if (!subscribers.length) {
-              unsubscribe.forEach((fn) => fn())
+              unsubscribe.forEach((fn) => fn());
             }
           }
-        }
+        };
       }
 
-      return noop
+      return noop;
     },
-  }
+  };
 }

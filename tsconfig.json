@@ -9,8 +9,8 @@
       "es2017"
     ],
     "sourceMap": false,
-    "allowJs": false,
-    "jsx": "preserve",
+    "allowJs": true,
+    "jsx": "react",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,

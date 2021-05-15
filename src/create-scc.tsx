@@ -1,20 +1,24 @@
-import React from "react"
-import hoistStatics from 'hoist-non-react-statics'
-import { Writable } from './store'
-import { useSetup, useMounted, useBeforeUpdate, useAfterUpdate } from './hooks/core'
-import { useWritable, useSubscription } from './hooks/store'
-import { isFunction, noop } from './utils'
-import { OnMount, BeforeUpdate, AfterUpdate } from './types'
+import React from "react";
+import { Writable } from "./store";
+import {
+  useSetup,
+  useMounted,
+  useBeforeUpdate,
+  useAfterUpdate,
+} from "./hooks";
+import { useWritable, useSubscription } from "./hooks";
+import { isFunction, noop } from "./utils";
+import { OnMount, BeforeUpdate, AfterUpdate } from "./types";
 
 interface CreateSCC<P, S, C> {
   state: S | (() => S);
   controller?: (args: {
-    props: React.PropsWithChildren<P>
-    state: Writable<S>
+    props: React.PropsWithChildren<P>;
+    state: Writable<S>;
     /* LIFE CYCLES */
-    onMount: OnMount
-    beforeUpdate: BeforeUpdate<P>
-    afterUpdate: AfterUpdate<P>
+    onMount: OnMount;
+    beforeUpdate: BeforeUpdate<P>;
+    afterUpdate: AfterUpdate<P>;
   }) => C;
   displayName?: string;
   subscribe?: any;
@@ -27,56 +31,67 @@ interface LifeCycles<P> {
   afterUpdate: (props: P) => void;
 }
 
-type WrapperComponentProps<P, S, C> = P & { ctrlValue: C | undefined; state: S }
+type WrapperComponentProps<P, S, C> = P & {
+  ctrlValue: C | undefined;
+  state: S;
+};
 
-function createSCC<P = any, S = any, C = any>({ state, controller, displayName, subscribe }: CreateSCC<P, S, C>) {
+function createSCC<P = any, S = any, C = any>({
+  state,
+  controller,
+  displayName,
+  subscribe,
+}: CreateSCC<P, S, C>) {
   const lcs: LifeCycles<P> = {
     onMount: noop,
     beforeUpdate: noop,
     afterUpdate: noop,
-  }
-  return function wrapWithSCC(WrappedComponent: React.FunctionComponent<WrapperComponentProps<P, S, C>>) {
+  };
+  return function wrapWithSCC(
+    WrappedComponent: React.FunctionComponent<WrapperComponentProps<P, S, C>>
+  ) {
     function BindFn(props: P) {
-      const writableState = useWritable(state)
+      const writableState = useWritable(state);
 
       const ctrlValue = useSetup(() => {
         function createLC(name: string, fn: any) {
-          lcs[name] = fn
+          lcs[name] = fn;
         }
 
         if (isFunction(controller)) {
           return controller({
             props,
             state: writableState,
-            onMount: (fn) => createLC('onMount', fn),
-            beforeUpdate: (fn) => createLC('beforeUpdate', fn),
-            afterUpdate: (fn) => createLC('afterUpdate', fn),
-          })
+            onMount: (fn) => createLC("onMount", fn),
+            beforeUpdate: (fn) => createLC("beforeUpdate", fn),
+            afterUpdate: (fn) => createLC("afterUpdate", fn),
+          });
         }
 
-        return
-      })
+        return;
+      });
 
-      useMounted(() => lcs.onMount())
+      useMounted(() => lcs.onMount());
 
-      useBeforeUpdate(() => lcs.beforeUpdate(props))
+      useBeforeUpdate(() => lcs.beforeUpdate(props));
 
-      useAfterUpdate(() => lcs.afterUpdate(props))
+      useAfterUpdate(() => lcs.afterUpdate(props));
 
-      useSubscription(subscribe)
+      useSubscription(subscribe);
 
-      if (WrappedComponent) {
-        return (
-          <WrappedComponent {...props} state={writableState.get()} ctrlValue={ctrlValue} />
-        )
-      }
-      return null
+      return (
+        <WrappedComponent
+          {...props}
+          state={writableState.get()}
+          ctrlValue={ctrlValue}
+        />
+      );
     }
 
-    const Bind = React.memo(BindFn)
-    Bind.displayName = displayName
-    return hoistStatics(Bind, WrappedComponent)
-  }
+    // const Bind = React.memo(BindFn)
+    BindFn.displayName = displayName;
+    return BindFn;
+  };
 }
 
-export default createSCC
+export default createSCC;
