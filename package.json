@@ -1,6 +1,6 @@
 {
   "name": "react-scc",
-  "version": "0.0.0-beta-2",
+  "version": "0.0.0-beta-3",
   "description": "React Js design pattern for creating components",
   "author": "ravid7000",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "start": "rollup -c -w",
     "deploy": "gh-pages -d example/build",
     "format": "eslint --fix",
-    "prepublishOnly": "yarn format && yarn build"
+    "prepare": "yarn build"
   },
   "dependencies": {
     "hoist-non-react-statics": "^3.3.2"
