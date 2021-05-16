@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useMounted } from "./use-mounted";
 
 type EffectFunction = (() => void) | (() => () => void);
 /**
@@ -6,14 +7,19 @@ type EffectFunction = (() => void) | (() => () => void);
  * @param fn callback function
  */
  export function useAfterUpdateOnce(fn: EffectFunction) {
+  const mounted = useRef(false);
   const once = useRef(true);
 
   useEffect(() => {
     let result;
-    if (once.current) {
+    if (mounted.current && once.current) {
       result = fn();
-      once.current = true;
+      once.current = false;
     }
     return result;
   });
+
+  useMounted(() => {
+    mounted.current = true
+  })
 }

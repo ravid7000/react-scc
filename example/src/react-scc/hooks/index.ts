@@ -10,3 +10,4 @@ export * from "./use-readable";
 export * from "./use-setup";
 export * from "./use-subscription";
 export * from "./use-writable";
+export * from "./use-mutable";

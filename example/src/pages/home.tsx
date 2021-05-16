@@ -1,46 +1,42 @@
 import { NavLink } from "react-router-dom";
-import {
-  useSetup,
-  writable,
-  combine,
-  useSubscription
-} from "../react-scc";
+import { createSCC, Controller, FC } from "../react-scc";
 
-// const useSetup = createOnce()
+type StateType = number
 
-const counter = writable(0);
-const counter1 = writable(0);
+type ControllerType = {
+  increment: () => void;
+  decrement: () => void;
+}
 
-const Home1 = () => {
-  useSetup(() => {
-    console.log("setup 1");
-  });
-
-  useSubscription(combine([counter, counter1]))
-
-  console.log("rendering");
+const Component: FC<unknown, StateType, ControllerType> = ({ state, ctrlValue }) => {
   return (
     <>
-      Counter: {counter.get()}
-      <button onClick={() => counter.update((count) => count - 1)}>-1</button>
-      <button onClick={() => counter.update((count) => count + 1)}>+1</button>
-      Counter1: {counter1.get()}
-      <button onClick={() => counter1.update((count) => count - 1)}>-1</button>
-      <button onClick={() => counter1.update((count) => count + 1)}>+1</button>
+      Counter: {state}
+      <button onClick={ctrlValue?.increment}>+1</button>
+      <button onClick={ctrlValue?.decrement}>-1</button>
       <NavLink to="/about">About</NavLink>
     </>
   );
-};
+}
 
-// const Home = createSCC({
-//   counter: 0,
-// })(({ counter }) => {
-//   return (
-//     <>
-//       Counter: {counter}
-//       <NavLink to="/about">About</NavLink>
-//     </>
-//   );
-// })
+const controller: Controller<unknown, StateType, ControllerType> = ({ state, onMount }) => {
+  onMount(() => {
+    console.log('mounted')
+  })
 
-export default Home1;
+  return {
+    increment: () => {
+      state.update(count => count + 1);
+    },
+    decrement: () => {
+      state.update(count => count - 1);
+    }
+  }
+}
+
+const Home = createSCC({
+  state: 0,
+  controller,
+})(Component)
+
+export default Home;

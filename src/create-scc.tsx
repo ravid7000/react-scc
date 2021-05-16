@@ -1,25 +1,26 @@
 import React from "react";
 import { Writable } from "./store";
-import {
-  useSetup,
-  useMounted,
-  useBeforeUpdate,
-  useAfterUpdate,
-} from "./hooks";
+import { useSetup, useMounted, useBeforeUpdate, useAfterUpdate } from "./hooks";
 import { useWritable, useSubscription } from "./hooks";
 import { isFunction, noop } from "./utils";
 import { OnMount, BeforeUpdate, AfterUpdate } from "./types";
 
-interface CreateSCC<P, S, C> {
+export type Controller<P = unknown, S = unknown, C = unknown> = (args: {
+  props: React.PropsWithChildren<P>;
+  state: Writable<S>;
+  /* LIFE CYCLES */
+  onMount: OnMount;
+  beforeUpdate: BeforeUpdate<P>;
+  afterUpdate: AfterUpdate<P>;
+}) => C;
+
+export type FC<P = unknown, S = unknown, C = unknown> = React.FunctionComponent<
+  WrapperComponentProps<P, S, C>
+>;
+
+export interface CreateSCC<P, S, C> {
   state: S | (() => S);
-  controller?: (args: {
-    props: React.PropsWithChildren<P>;
-    state: Writable<S>;
-    /* LIFE CYCLES */
-    onMount: OnMount;
-    beforeUpdate: BeforeUpdate<P>;
-    afterUpdate: AfterUpdate<P>;
-  }) => C;
+  controller?: Controller<P, S, C>;
   displayName?: string;
   subscribe?: any;
   // shouldForwardRef?: boolean;
@@ -36,7 +37,7 @@ type WrapperComponentProps<P, S, C> = P & {
   state: S;
 };
 
-function createSCC<P = any, S = any, C = any>({
+export function createSCC<P = any, S = any, C = any>({
   state,
   controller,
   displayName,
@@ -54,7 +55,7 @@ function createSCC<P = any, S = any, C = any>({
       const writableState = useWritable(state);
 
       const ctrlValue = useSetup(() => {
-        function createLC(name: string, fn: any) {
+        function createLC(name: keyof LifeCycles<P>, fn: any) {
           lcs[name] = fn;
         }
 
@@ -68,7 +69,7 @@ function createSCC<P = any, S = any, C = any>({
           });
         }
 
-        return;
+        return undefined;
       });
 
       useMounted(() => lcs.onMount());
@@ -88,10 +89,8 @@ function createSCC<P = any, S = any, C = any>({
       );
     }
 
-    // const Bind = React.memo(BindFn)
-    BindFn.displayName = displayName;
-    return BindFn;
+    const Bind = React.memo(BindFn);
+    Bind.displayName = displayName;
+    return Bind;
   };
 }
-
-export default createSCC;

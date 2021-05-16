@@ -9,12 +9,12 @@ export function useBeforeUpdateOnce(fn: () => void) {
   const mounted = useRef(false);
   const once = useRef(true);
 
-  useMounted(() => {
-    mounted.current = true;
-  });
-
   if (mounted.current && once.current) {
     fn();
     once.current = false;
   }
+
+  useMounted(() => {
+    mounted.current = true;
+  });
 }

@@ -1,6 +1,11 @@
 import { useState, useRef } from "react";
-import { readable, Readable, StartFn } from "../store";
+import {
+  readable,
+  Readable,
+  StartFn,
+} from "../store";
 import { isFunction } from "../utils";
+
 import { useMounted } from "./use-mounted";
 
 function extractInitialState<S>(initialState: S | (() => S)) {

@@ -1,28 +1,27 @@
-import { useState, useRef, useEffect } from "react";
-import {
-  writable,
-  Writable,
-} from "../store";
-import { isFunction, noop } from "../utils";
+import { useState, useRef } from "react";
+import { writable, Writable } from "../store";
+import { isFunction } from "../utils";
+import { useMounted } from "./use-mounted";
+
+function extractInitialState<S>(initialState: S | (() => S)) {
+  let state: S;
+  if (isFunction(initialState)) {
+    state = initialState();
+  } else {
+    state = initialState;
+  }
+  return state;
+}
 
 export function useWritable<S>(initialState: S | (() => S)) {
   const updateState = useState(initialState);
-  const unsubscribe = useRef(noop);
-  const writableState = useRef<Writable<S>>();
+  const writableState = useRef<Writable<S>>(
+    writable(extractInitialState(initialState))
+  );
 
-  useEffect(() => unsubscribe.current, []);
-
-  if (!writableState.current) {
-    let state: S;
-    if (isFunction(initialState)) {
-      state = initialState();
-    } else {
-      state = initialState;
-    }
-
-    writableState.current = writable(state);
-    unsubscribe.current = writableState.current.subscribe(updateState[1]);
-  }
+  useMounted(() =>
+    writableState.current.subscribe(updateState[1])
+  );
 
   return writableState.current;
 }

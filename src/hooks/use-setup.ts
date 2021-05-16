@@ -1,20 +1,19 @@
-import { useRef } from "react";
+import { useRef } from 'react';
 
 /**
- * useOnce only runs once during the initialization of the component
+ * useSetup only runs once during the initialization of the component
  *
  * @param fn Callback Function
  * @returns
  */
-export function useSetup<T>(fn: () => T): T {
+export function useSetup<T = undefined>(fn: () => T): T | undefined {
   const once = useRef(true);
-  let result: T;
+  const result = useRef<T>()
 
   if (once.current) {
-    result = fn();
+    result.current = fn();
     once.current = false;
   }
 
-  // @ts-ignore
-  return result;
+  return result.current;
 }

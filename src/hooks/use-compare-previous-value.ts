@@ -1,6 +1,15 @@
 import { useEffect, useRef } from "react";
 import { isFunction } from '../utils';
-import { useSetup } from './use-setup';
+
+function extractPreviousValue<V>(value: V | (() => V)) {
+  let val;
+  if (isFunction(value)) {
+    val = value();
+  } else {
+    val = value;
+  }
+  return val;
+}
 
 /**
  * useComparePreviousValue is used to call a function with previous and current values
@@ -14,26 +23,12 @@ import { useSetup } from './use-setup';
   fn: (args: { prevValue: V; value: V }) => void,
   value: V | (() => V)
 ) {
-  const prevValue = useRef<V>();
-
-  function extractPreviousValue() {
-    let val;
-    if (isFunction(value)) {
-      val = value();
-    } else {
-      val = value;
-    }
-    return val;
-  }
-
-  useSetup(() => {
-    prevValue.current = extractPreviousValue();
-  });
+  const prevValue = useRef<V>(extractPreviousValue(value));
 
   useEffect(() => {
-    const nextValue = extractPreviousValue();
+    const nextValue = extractPreviousValue(value);
     const result = fn({
-      prevValue: prevValue.current || nextValue,
+      prevValue: prevValue.current,
       value: nextValue,
     });
     prevValue.current = nextValue;

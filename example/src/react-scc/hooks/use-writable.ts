@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { writable, Writable } from "../store";
-import { isFunction, noop } from "../utils";
+import { isFunction } from "../utils";
 import { useMounted } from "./use-mounted";
 
 function extractInitialState<S>(initialState: S | (() => S)) {
@@ -19,7 +19,9 @@ export function useWritable<S>(initialState: S | (() => S)) {
     writable(extractInitialState(initialState))
   );
 
-  useMounted(() => writableState.current.subscribe(updateState[1]));
+  useMounted(() =>
+    writableState.current.subscribe(updateState[1])
+  );
 
   return writableState.current;
 }

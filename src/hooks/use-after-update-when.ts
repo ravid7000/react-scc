@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useMounted } from "./use-mounted";
 import { isFunction } from '../utils';
 
 type EffectFunction = (() => void) | (() => () => void);
@@ -11,20 +12,28 @@ type EffectFunction = (() => void) | (() => () => void);
   fn: EffectFunction,
   condition: boolean | (() => boolean)
 ) {
+  const mounted = useRef(false);
+
   useEffect(() => {
     let result;
     let canCall;
 
-    if (isFunction(condition)) {
-      canCall = condition();
-    } else {
-      canCall = condition;
-    }
-
-    if (canCall) {
-      result = fn();
+    if (mounted.current) {
+      if (isFunction(condition)) {
+        canCall = condition();
+      } else {
+        canCall = condition;
+      }
+  
+      if (canCall) {
+        result = fn();
+      }
     }
 
     return result;
   });
+
+  useMounted(() => {
+    mounted.current = true
+  })
 }

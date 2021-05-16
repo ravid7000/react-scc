@@ -8,7 +8,7 @@ type ArrayLikeDict = Record<number, any>;
 
 type Callback = (values: ArrayLikeDict) => void;
 
-export type StartFn<S> = (set: (state: S) => void) => void;
+export type StartFn<S> = (state: Writable<S>) => void;
 
 export interface Readable<S> {
   /**
@@ -167,7 +167,7 @@ export function readable<State>(
   const readableState = writable(state);
 
   if (isFunction(start)) {
-    start(readableState.set);
+    start(readableState);
   }
 
   return {
