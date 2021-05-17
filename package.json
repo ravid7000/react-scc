@@ -1,7 +1,7 @@
 {
   "name": "react-scc",
   "version": "0.0.0-beta-3",
-  "description": "React Js design pattern for creating components",
+  "description": "React.js component building framework",
   "author": "ravid7000",
   "license": "MIT",
   "repository": "ravid7000/react-scc",
@@ -16,29 +16,6 @@
   "files": [
     "dist/*"
   ],
-  "exports": {
-    "./packages.json": "./package.json",
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.js"
-    },
-    "./store": {
-      "import": "./dist/store.es.js",
-      "require": "./dist/store.js"
-    },
-    "./hooks": {
-      "import": "./dist/hooks/index.es.js",
-      "require": "./dist/hooks/index.js"
-    },
-    "./hooks/core": {
-      "import": "./dist/hooks/core.es.js",
-      "require": "./dist/hooks/core.js"
-    },
-    "./hooks/store": {
-      "import": "./dist/hooks/store.es.js",
-      "require": "./dist/hooks/store.js"
-    }
-  },
   "scripts": {
     "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
     "test:watch": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
@@ -61,7 +38,6 @@
     "@rollup/plugin-typescript": "^5.0.2",
     "@rollup/plugin-url": "^5.0.1",
     "@testing-library/react-hooks": "^3.2.1",
-    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^23.3.13",
     "@types/react": "^16.7.22",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
@@ -75,7 +51,6 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "gh-pages": "^2.0.1",
     "react": "^16.9.0",
     "react-scripts": "^3.4.0",
     "react-test-renderer": "^16.9.0",

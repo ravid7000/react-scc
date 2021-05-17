@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { createSCC, Controller, FC } from "../react-scc";
+import { createSCC, Controller, FC } from "react-scc";
 
 type StateType = number
 
