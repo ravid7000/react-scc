@@ -40,17 +40,15 @@
     }
   },
   "scripts": {
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
+    "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
+    "test:watch": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
     "build": "rm -rf ./dist && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir ./dist",
     "start": "rollup -c -w",
     "deploy": "gh-pages -d example/build",
     "format": "eslint --fix",
     "prepare": "yarn build"
   },
-  "dependencies": {
-    "hoist-non-react-statics": "^3.3.2"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^16.9.0"
   },

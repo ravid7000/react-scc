@@ -32,3 +32,4 @@ yarn-error.log*
 /utils.d.ts
 /types.d.ts
 /hooks
+coverage
