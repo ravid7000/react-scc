@@ -1,6 +1,6 @@
 {
   "name": "react-scc",
-  "version": "0.0.0-beta-3",
+  "version": "0.0.0-beta-4",
   "description": "React.js component building framework",
   "author": "ravid7000",
   "license": "MIT",
@@ -20,8 +20,6 @@
     "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
     "test:watch": "SKIP_PREFLIGHT_CHECK=true react-scripts test --env=jsdom",
     "build": "rm -rf ./dist && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir ./dist",
-    "start": "rollup -c -w",
-    "deploy": "gh-pages -d example/build",
     "format": "eslint --fix",
     "prepare": "yarn build"
   },
